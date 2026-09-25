@@ -1,0 +1,85 @@
+## scan to map 参数
+if_debug: false
+debug_publish_poses: false
+debug_publish_clouds: false
+debug_pose_jump_threshold: 0.5
+debug_odom_jump_translation_threshold: 1.0
+debug_odom_jump_yaw_threshold: 0.7
+suppress_static_jitter: false
+publish_map_to_odom_tf: true
+use_tf_initial_pose: false
+smooth_map_to_odom: true
+enable_initial_global_yaw_search: true
+enable_startup_relocalization: true
+initial_global_yaw_search_range_deg: 180.0
+initial_global_yaw_search_step_deg: 30.0
+initial_global_yaw_search_frames: 8
+startup_relocalization_frames: 12
+startup_relocalization_translation_range: 0.20
+startup_relocalization_translation_step: 0.04
+startup_relocalization_yaw_range_deg: 10.0
+startup_relocalization_yaw_step_deg: 2.0
+startup_relocalization_accept_score_threshold: 0.40
+startup_relocalization_accept_improvement_threshold: 0.002
+startup_relocalization_accept_improvement_ratio: 0.995
+map_to_odom_publish_rate: 40.0
+map_to_odom_stationary_alpha: 0.12
+map_to_odom_moving_alpha: 0.85
+map_to_odom_moving_linear_threshold: 0.08
+map_to_odom_moving_angular_threshold: 0.15
+map_to_odom_stationary_translation_deadband: 0.008
+map_to_odom_stationary_yaw_deadband: 0.010
+local_map_cache_translation_threshold: 0.30
+local_map_cache_yaw_threshold: 0.10
+use_scan_midpoint_time: true
+enable_scan_deskew: true
+enable_yaw_search: true
+search_translation_range: 0.12
+search_translation_step: 0.04
+search_score_max_distance: 0.22
+search_score_leaf_size: 0.06
+local_map_radius: 7.5
+search_accept_score_threshold: 0.34
+search_accept_improvement_threshold: 0.010
+search_accept_improvement_ratio: 0.97
+covariance_translation_min: 0.02
+covariance_yaw_min: 0.03
+static_linear_speed_threshold: 0.03
+static_angular_speed_threshold: 0.05
+static_pose_translation_epsilon: 0.04
+static_pose_yaw_epsilon: 0.06
+static_odom_translation_epsilon: 0.015
+static_odom_yaw_epsilon: 0.03
+yaw_search_trigger_angular_z: 0.10
+yaw_search_trigger_odom_yaw: 0.010
+yaw_search_range_deg: 20.0
+yaw_search_step_deg: 4.0
+
+# 坐标系
+odom_frame: "odom"
+base_frame: "base_link"
+map_frame: "map"
+lidar_frame: "laser_frame"
+
+# 匹配结果方差
+Variance_X: 0.12
+Variance_Y: 0.12
+Variance_Yaw: 0.08
+
+Use_TfTree_Always: false
+
+# ICP定位参数
+SCORE_THRESHOLD_MAX: 0.1      # 达到最大迭代次数后，代价仍高于此值，认为无法收敛
+ANGLE_SPEED_THRESHOLD: 3      # 角速度阈值，角速度大于此值则不发送定位
+ANGLE_THRESHOLD: 0.01         # 最小变换角度
+DIST_THRESHOLD: 0.01          # 最小变换距离
+ANGLE_UPPER_THRESHOLD: 0.30   # 最大角度变换
+Point_Quantity_THRESHOLD: 40 # 点云数阈值
+
+Maximum_Iterations: 100        # 最大迭代次数50
+
+ObstacleRemoval_Distance_Max: 1.3     # 如果雷达点云中点在地图点云最近点大于此值，就认为该点为障碍点
+VoxelGridRemoval_LeafSize: 0.02        # 体素滤波的边长
+enable_outlier_removal: true           # 是否启用统计离群点滤波，减少孤立毛刺点
+outlier_mean_k: 16                     # 统计邻域点数，过大会吃掉墙角，过小滤波弱
+outlier_stddev_mul: 1.5                # 离群阈值，越小越严格，建议 1.0-1.5
