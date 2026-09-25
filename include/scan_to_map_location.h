@@ -1,3 +1,6 @@
+#ifndef SCAN_TO_MAP_LOCATION_H
+#define SCAN_TO_MAP_LOCATION_H
+
 #include <cmath>
 #include <algorithm>
 #include <vector>
@@ -360,3 +363,5 @@ public:
     void odomCallback(const nav_msgs::Odometry::ConstPtr &odometryMsg);
     void laserCallback(const sensor_msgs::LaserScan::ConstPtr &scan_msg);
 };
+
+#endif  // SCAN_TO_MAP_LOCATION_H
