@@ -125,7 +125,7 @@ private:
     double match_time_;          // 当前匹配的时间
     double last_match_time_ = 0; // 上一帧匹配的时间
     double scan_time_;           // 当前用于匹配的雷达数据时间
-    double debug_pose_jump_threshold_;
+    double pose_jump_risk_threshold_; // 预测位姿与匹配结果偏差超过此值，状态标记为 RISK
     double latest_odom_angular_z_ = 0.0;
     double latest_odom_linear_x_ = 0.0;
     double latest_odom_linear_y_ = 0.0;
@@ -162,8 +162,6 @@ private:
     double last_odom_delta_x_ = 0.0;
     double last_odom_delta_y_ = 0.0;
     double last_odom_delta_yaw_ = 0.0;
-    double debug_odom_jump_translation_threshold_;
-    double debug_odom_jump_yaw_threshold_;
     bool last_static_lock_applied_ = false;
     bool has_static_lock_pose_ = false;
     bool suppress_static_jitter_ = false;

@@ -5,7 +5,7 @@
   <description>基于 ICP 的激光 scan-to-map 定位节点，发布 map 坐标系下的位姿与 map-&gt;odom 变换。</description>
 
   <maintainer email="2671882038@qq.com">ark0-1</maintainer>
-  <license>TODO</license>
+  <license>MIT</license>
 
   <buildtool_depend>catkin</buildtool_depend>
 

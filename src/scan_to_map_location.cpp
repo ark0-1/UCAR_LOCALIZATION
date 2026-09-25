@@ -62,9 +62,7 @@ void Scan2MapLocation::InitParams()
     private_nh.param<double>("SCORE_THRESHOLD_MAX", SCORE_THRESHOLD_MAX_, 0.1);           // 达到最大迭代次数或者到达差分阈值后后，代价仍高于此值，认为无法收敛,自适应使用
     private_nh.param<double>("Point_Quantity_THRESHOLD", Point_Quantity_THRESHOLD_, 200); // 点云数阈值,低于此值不匹配
     private_nh.param<double>("Maximum_Iterations", Maximum_Iterations_, 100);             // ICP中的最大迭代次数
-    private_nh.param<double>("debug_pose_jump_threshold", debug_pose_jump_threshold_, 0.5);
-    private_nh.param<double>("debug_odom_jump_translation_threshold", debug_odom_jump_translation_threshold_, 1.0);
-    private_nh.param<double>("debug_odom_jump_yaw_threshold", debug_odom_jump_yaw_threshold_, 0.7);
+    private_nh.param<double>("pose_jump_risk_threshold", pose_jump_risk_threshold_, 0.5);
     private_nh.param<bool>("suppress_static_jitter", suppress_static_jitter_, false);
     private_nh.param<bool>("use_scan_midpoint_time", use_scan_midpoint_time_, true);
     private_nh.param<bool>("enable_scan_deskew", enable_scan_deskew_, true);
@@ -601,7 +599,7 @@ void Scan2MapLocation::laserCallback(const sensor_msgs::LaserScan::ConstPtr &sca
         ExtractPose2D(predicted_map_to_base, pred_x, pred_y, pred_yaw);
         ExtractPose2D(match_result_, final_x, final_y, final_yaw);
         const double pose_jump = std::hypot(final_x - pred_x, final_y - pred_y);
-        if (pose_jump > debug_pose_jump_threshold_)
+        if (pose_jump > pose_jump_risk_threshold_)
         {
             status = "RISK";
             if (!reason.empty() && reason != "accepted")
@@ -2052,17 +2050,6 @@ void Scan2MapLocation::LogFrameSummary(size_t frame_id, const std::string &stage
     //     << std::setprecision(3)
     //     << " reg_corr=" << last_registration_correspondence_count_
     //     << " static_lock=" << (last_static_lock_applied_ ? 1 : 0);
-
-    const double odom_translation = std::hypot(last_odom_delta_x_, last_odom_delta_y_);
-    if (odom_translation > debug_odom_jump_translation_threshold_ ||
-        std::abs(last_odom_delta_yaw_) > debug_odom_jump_yaw_threshold_)
-    {
-        // oss << " odom_jump=1";
-    }
-    else
-    {
-        // oss << " odom_jump=0";
-    }
 
     if (predicted_pose != nullptr)
     {
