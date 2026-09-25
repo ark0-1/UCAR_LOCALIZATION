@@ -2,11 +2,11 @@
 if_debug: false
 debug_publish_poses: false
 debug_publish_clouds: false
-debug_pose_jump_threshold: 0.5
-debug_odom_jump_translation_threshold: 1.0
-debug_odom_jump_yaw_threshold: 0.7
+pose_jump_risk_threshold: 0.5           # 预测位姿与匹配结果偏差超过此值，定位状态标记为 RISK
 suppress_static_jitter: false
 publish_map_to_odom_tf: true
+publish_localization_state: true        # 是否发布 localization_state 话题
+publish_localization_diagnostics: true  # 是否发布 localization_diagnostics 话题
 use_tf_initial_pose: false
 smooth_map_to_odom: true
 enable_initial_global_yaw_search: true
@@ -33,12 +33,16 @@ local_map_cache_translation_threshold: 0.30
 local_map_cache_yaw_threshold: 0.10
 use_scan_midpoint_time: true
 enable_scan_deskew: true
+odom_queue_length: 300                  # 里程计队列长度，用于按时间戳回查位姿
+AGE_THRESHOLD: 1.0                      # scan 与匹配结果的最大时间间隔/秒
 enable_yaw_search: true
 search_translation_range: 0.12
 search_translation_step: 0.04
 search_score_max_distance: 0.22
 search_score_leaf_size: 0.06
 local_map_radius: 7.5
+adaptive_threshold_initial: 0.20        # 自适应匹配阈值初值
+adaptive_threshold_min_motion: 0.05     # 触发自适应阈值更新的最小运动量
 search_accept_score_threshold: 0.34
 search_accept_improvement_threshold: 0.010
 search_accept_improvement_ratio: 0.97
@@ -77,7 +81,11 @@ ANGLE_UPPER_THRESHOLD: 0.30   # 最大角度变换
 Point_Quantity_THRESHOLD: 40 # 点云数阈值
 
 Maximum_Iterations: 100        # 最大迭代次数50
+registration_translation_epsilon: 1e-3  # 配准平移收敛阈值
+registration_rotation_epsilon: 1e-3     # 配准旋转收敛阈值
 
+Scan_Range_Min: 0.3                    # 雷达数据点最小距离，小于此值丢弃
+Scan_Range_Max: 20.0                   # 雷达数据点最大距离，大于此值丢弃
 ObstacleRemoval_Distance_Max: 1.3     # 如果雷达点云中点在地图点云最近点大于此值，就认为该点为障碍点
 VoxelGridRemoval_LeafSize: 0.02        # 体素滤波的边长
 enable_outlier_removal: true           # 是否启用统计离群点滤波，减少孤立毛刺点

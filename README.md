@@ -114,11 +114,15 @@ rostopic pub /initialpose geometry_msgs/PoseWithCovarianceStamped ...
 | `ANGLE_UPPER_THRESHOLD` | 最大允许角度变换 |
 | `Point_Quantity_THRESHOLD` | 有效点数下限 |
 | `ANGLE_SPEED_THRESHOLD` | 角速度超过此值时不发布定位（防转弯时跳变） |
+| `registration_translation_epsilon` | 配准平移收敛阈值，默认 1e-3 |
+| `registration_rotation_epsilon` | 配准旋转收敛阈值，默认 1e-3 |
 
 ### 点云预处理
 
 | 参数 | 默认 | 说明 |
 |---|---|---|
+| `Scan_Range_Min` | 0.3 | 雷达点最小距离，小于此值丢弃 |
+| `Scan_Range_Max` | 20.0 | 雷达点最大距离，大于此值丢弃 |
 | `ObstacleRemoval_Distance_Max` | 1.3 | 与地图最近点距离超过此值视为障碍点剔除 |
 | `VoxelGridRemoval_LeafSize` | 0.02 | 体素滤波边长 |
 | `enable_outlier_removal` | true | 统计离群点滤波开关 |
@@ -128,6 +132,8 @@ rostopic pub /initialpose geometry_msgs/PoseWithCovarianceStamped ...
 ### 位姿搜索
 
 `enable_yaw_search` 控制是否在邻域枚举候选；`search_translation_range` / `search_translation_step` / `yaw_search_range_deg` / `yaw_search_step_deg` 定义搜索空间；`search_accept_score_threshold` 及两个 `improvement_*` 决定是否采纳搜索结果。`local_map_radius` 控制参与匹配的局部地图半径（默认 7.5 m）。
+
+`adaptive_threshold_initial`（默认 0.20）与 `adaptive_threshold_min_motion`（默认 0.05）控制自适应匹配阈值的初值，以及触发阈值更新的最小运动量。
 
 ### 启动重定位与全局搜索
 
@@ -145,6 +151,23 @@ rostopic pub /initialpose geometry_msgs/PoseWithCovarianceStamped ...
 | `map_to_odom_moving_linear_threshold` | 0.08 | 判定为运动的线速度阈值 |
 | `map_to_odom_moving_angular_threshold` | 0.15 | 判定为运动的角速度阈值 |
 
+### 时间与队列
+
+| 参数 | 默认 | 说明 |
+|---|---|---|
+| `AGE_THRESHOLD` | 1.0 | scan 与匹配结果的最大时间间隔/秒 |
+| `odom_queue_length` | 300 | 里程计队列长度，用于按时间戳回查位姿 |
+| `use_scan_midpoint_time` | true | 一帧激光以中点时刻为基准 |
+| `enable_scan_deskew` | true | 扫描去畸变开关 |
+
+### 状态与诊断
+
+| 参数 | 默认 | 说明 |
+|---|---|---|
+| `publish_localization_state` | true | 是否发布 `localization_state` 话题 |
+| `publish_localization_diagnostics` | true | 是否发布 `localization_diagnostics` 话题 |
+| `pose_jump_risk_threshold` | 0.5 | 预测位姿与匹配结果偏差超过此值时，状态标记为 RISK |
+
 ## 调参建议
 
 - **转弯时定位跳变** — 调低 `ANGLE_SPEED_THRESHOLD`，或增大 `map_to_odom_moving_alpha` 之外的平滑力度
@@ -155,27 +178,18 @@ rostopic pub /initialpose geometry_msgs/PoseWithCovarianceStamped ...
 
 ## 已知问题
 
-1. **10 个参数未在 `icp_params.yaml` 中暴露** — 代码读取但配置文件里没有，只能用代码内置默认值：
+1. **诊断话题的 28 个数值字段恒为空字符串** — `LogFrameSummary` 里的 `add_double` lambda（`src/scan_to_map_location.cpp:1729`）中，真正执行格式化的那行被注释掉了：
 
-   | 参数 | 代码默认 | 说明 |
-   |---|---|---|
-   | `Scan_Range_Max` | 20 | 雷达数据最大距离 |
-   | `Scan_Range_Min` | 0.3 | 雷达数据最小距离 |
-   | `AGE_THRESHOLD` | 1 | scan 与匹配结果的最大时间间隔 |
-   | `odom_queue_length` | 300 | 里程计队列长度 |
-   | `adaptive_threshold_initial` | 0.20 | 自适应阈值初值 |
-   | `adaptive_threshold_min_motion` | 0.05 | 触发阈值更新的最小运动量 |
-   | `registration_translation_epsilon` | 1e-3 | 配准平移收敛阈值 |
-   | `registration_rotation_epsilon` | 1e-3 | 配准旋转收敛阈值 |
-   | `publish_localization_state` | true | 是否发布状态话题 |
-   | `publish_localization_diagnostics` | true | 是否发布诊断话题 |
+   ```cpp
+   std::ostringstream oss;
+   // oss << std::fixed << std::setprecision(precision) << value;
+   add_kv(key, oss.str());   // oss 始终为空
+   ```
 
-   其中 `Scan_Range_Min` / `Scan_Range_Max` 和 `AGE_THRESHOLD` 是实际调参时常用到的，建议补进 yaml。
+   因此 `localization_diagnostics` 里 `scan_age`、`icp_score`、`search_dx`、`pred_x` 等 28 个数值字段恒为空串（12 个字符串字段不受影响）。取消该行注释即可修复。
 
-2. **`package.xml` 的 `<license>` 为 `TODO`** — 公开仓库建议补上明确的许可证。
-
-3. **`debug_odom_jump_*` 与 `debug_pose_jump_threshold`** — 名字带 `debug_` 前缀，但实际参与运行时的跳变判断，不只是调试输出，参数命名有误导性。
+2. **`Maximum_Iterations` 的注释与实际值不符** — `config/icp_params.yaml` 中为 `Maximum_Iterations: 100  # 最大迭代次数50`，注释写 50，值却是 100。
 
 ## License
 
-待补充。
+MIT，见 [LICENSE](LICENSE)。
