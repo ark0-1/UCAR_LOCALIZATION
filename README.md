@@ -176,20 +176,6 @@ rostopic pub /initialpose geometry_msgs/PoseWithCovarianceStamped ...
 - **动态障碍物误剔除** — 增大 `ObstacleRemoval_Distance_Max`
 - **墙面点云被滤掉** — 减小 `outlier_mean_k` 或增大 `outlier_stddev_mul`
 
-## 已知问题
-
-1. **诊断话题的 28 个数值字段恒为空字符串** — `LogFrameSummary` 里的 `add_double` lambda（`src/scan_to_map_location.cpp:1729`）中，真正执行格式化的那行被注释掉了：
-
-   ```cpp
-   std::ostringstream oss;
-   // oss << std::fixed << std::setprecision(precision) << value;
-   add_kv(key, oss.str());   // oss 始终为空
-   ```
-
-   因此 `localization_diagnostics` 里 `scan_age`、`icp_score`、`search_dx`、`pred_x` 等 28 个数值字段恒为空串（12 个字符串字段不受影响）。取消该行注释即可修复。
-
-2. **`Maximum_Iterations` 的注释与实际值不符** — `config/icp_params.yaml` 中为 `Maximum_Iterations: 100  # 最大迭代次数50`，注释写 50，值却是 100。
-
 ## License
 
 MIT，见 [LICENSE](LICENSE)。

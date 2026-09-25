@@ -80,7 +80,7 @@ DIST_THRESHOLD: 0.01          # 最小变换距离
 ANGLE_UPPER_THRESHOLD: 0.30   # 最大角度变换
 Point_Quantity_THRESHOLD: 40 # 点云数阈值
 
-Maximum_Iterations: 100        # 最大迭代次数50
+Maximum_Iterations: 100        # 最大迭代次数100
 registration_translation_epsilon: 1e-3  # 配准平移收敛阈值
 registration_rotation_epsilon: 1e-3     # 配准旋转收敛阈值
 

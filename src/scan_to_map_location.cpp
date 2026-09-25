@@ -1729,7 +1729,7 @@ void Scan2MapLocation::PublishLocalizationDebugState(size_t frame_id, const ros:
     auto add_double = [&](const std::string &key, double value, int precision = 6)
     {
         std::ostringstream oss;
-        // oss << std::fixed << std::setprecision(precision) << value;
+        oss << std::fixed << std::setprecision(precision) << value;
         add_kv(key, oss.str());
     };
 
