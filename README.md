@@ -155,9 +155,7 @@ rostopic pub /initialpose geometry_msgs/PoseWithCovarianceStamped ...
 
 ## 已知问题
 
-1. **`include/scan_to_map_location.h` 缺少头文件保护** — 既无 `#pragma once` 也无 `#ifndef` 宏。当前只被一个 `.cpp` include 一次，不会出错，但一旦出现间接重复包含就会编译失败。建议加上。
-
-2. **10 个参数未在 `icp_params.yaml` 中暴露** — 代码读取但配置文件里没有，只能用代码内置默认值：
+1. **10 个参数未在 `icp_params.yaml` 中暴露** — 代码读取但配置文件里没有，只能用代码内置默认值：
 
    | 参数 | 代码默认 | 说明 |
    |---|---|---|
@@ -174,9 +172,9 @@ rostopic pub /initialpose geometry_msgs/PoseWithCovarianceStamped ...
 
    其中 `Scan_Range_Min` / `Scan_Range_Max` 和 `AGE_THRESHOLD` 是实际调参时常用到的，建议补进 yaml。
 
-3. **`package.xml` 的 `<license>` 为 `TODO`** — 且 `maintainer` 信息仍为模板占位符。
+2. **`package.xml` 的 `<license>` 为 `TODO`** — 公开仓库建议补上明确的许可证。
 
-4. **`debug_odom_jump_*` 与 `debug_pose_jump_threshold`** — 名字带 `debug_` 前缀，但实际参与运行时的跳变判断，不只是调试输出，参数命名有误导性。
+3. **`debug_odom_jump_*` 与 `debug_pose_jump_threshold`** — 名字带 `debug_` 前缀，但实际参与运行时的跳变判断，不只是调试输出，参数命名有误导性。
 
 ## License
 
