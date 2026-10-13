@@ -12,7 +12,7 @@
 2. **预处理** — 统计离群点滤波（`enable_outlier_removal`）→ 体素降采样 → 剔除与地图点云距离过远的障碍点（`ObstacleRemoval_Distance_Max`）
 3. **预测初值** — 由 `odom` 队列推算相邻帧间运动量，得到预测位姿
 4. **位姿搜索** — 可选地在平移 / 偏航角邻域内枚举候选位姿，用打分选出最优初值（`enable_yaw_search`、`search_*`）
-5. **ICP 精配准** — 以候选位姿为初值做点到面 ICP，得到最终位姿
+5. **ICP 精配准** — 以候选位姿为初值做点到点 ICP，得到最终位姿
 6. **平滑与发布** — 按运动状态选择平滑系数，发布定位结果与 `map → odom`
 
 针对两类易失败场景有专门机制：
@@ -93,7 +93,7 @@ rostopic pub /initialpose geometry_msgs/PoseWithCovarianceStamped ...
 
 ## 参数
 
-全部参数位于 `config/icp_params.yaml`（共 75 项），分以下几组：
+全部参数位于 `config/icp_params.yaml`（共 83 项），分以下几组：
 
 ### 坐标系
 
